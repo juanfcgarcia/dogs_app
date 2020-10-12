@@ -5,7 +5,7 @@ class UsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('Hello World'),
+        child: Text('Welcome to DogsApp !'),
       ),
     );
   }

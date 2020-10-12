@@ -3,6 +3,9 @@ import 'package:dogs/widgets/custom_input.dart';
 import 'package:dogs/widgets/labels.dart';
 import 'package:dogs/widgets/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:dogs/services/auth_services.dart';
+import 'package:dogs/helpers/show_alert.dart';
 
 class RegisterPage extends StatelessWidget {
   @override
@@ -46,6 +49,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -69,11 +74,23 @@ class __FormState extends State<_Form> {
           isPasswrod: true,
         ),
         BtnBlue(
-          text: 'Ingresar',
-          onPressed: () {
-            print(emailCtrl.text);
-            print(passCtrl.text);
-          },
+          text: 'Crear cuenta',
+          onPressed: authService.authenticating
+              ? null
+              : () async {
+                  print(emailCtrl.text);
+                  print(passCtrl.text);
+                  final registerOk = await authService.register(
+                      nameCtrl.text.trim(),
+                      emailCtrl.text.trim(),
+                      passCtrl.text.trim());
+
+                  if (registerOk == true) {
+                    Navigator.pushReplacementNamed(context, 'home');
+                  } else {
+                    showAlert(context, 'Registro Incorrecto', registerOk);
+                  }
+                },
         )
       ]),
     );

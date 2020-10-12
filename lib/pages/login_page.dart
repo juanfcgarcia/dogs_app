@@ -1,8 +1,11 @@
+import 'package:dogs/helpers/show_alert.dart';
+import 'package:dogs/services/auth_services.dart';
 import 'package:dogs/widgets/btn_blue.dart';
 import 'package:dogs/widgets/custom_input.dart';
 import 'package:dogs/widgets/labels.dart';
 import 'package:dogs/widgets/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -45,6 +48,7 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -63,10 +67,22 @@ class __FormState extends State<_Form> {
         ),
         BtnBlue(
           text: 'Ingresar',
-          onPressed: () {
-            print(emailCtrl.text);
-            print(passCtrl.text);
-          },
+          onPressed: authService.authenticating
+              ? null
+              : () async {
+                  FocusScope.of(context).unfocus();
+                  final loginOk = await authService.login(
+                      emailCtrl.text.trim(), passCtrl.text.trim());
+
+                  if (loginOk) {
+                    //Navegar a otra pantalla
+                    Navigator.pushReplacementNamed(context, 'home');
+                  } else {
+                    //Mostrar alerta
+                    showAlert(context, 'Login Incorrecto',
+                        'Verifique su Correo y Contraseña');
+                  }
+                },
         )
       ]),
     );
